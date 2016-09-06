@@ -177,7 +177,15 @@
                     <p>Style with <code>maxzoom: 14</code> means no z15+ tiles</p>
                 </section>
                 <section>
-                        ensure all data present at all layers
+                    <h1>All data needs to be at z14</h1>
+                    <p>Each layer in the source has a <code>minzoom</code></p>
+                    <p>Needs to be minimum of 14</p>
+                    <p>Otherwise data won't be included in z14 tile, which is uses to render z15+ tiles</p>
+                    <p>Style can still filter on zoom for display purposes (<code>[zoom&gt;16]</code>)</p>
+                    <!-- Example of bad layer with z17 layer -->
+                    <!-- Maybe this is slowing things down -->
+                </section>
+                <section>
                     geometry type on planet_osm_polygon
                 </section>
 
