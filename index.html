@@ -157,17 +157,34 @@
                     Point on Surface/ centroid
                 </section>
                 <section>
-                    Zoom level
+                    <h1>Zoom level</h1>
+                    <!-- image of simplification problem -->
+                </section>
+                <section>
+                    Data is being simplified
+                    Fine for normal zoom level, but z15+ uses z14 data
+                    Simplification is too much
+                </section>
+                <section>
+                    <h1>Solution - <code>maxzoom</code></h1>
+                    <p><code>maxzoom: 14</code> in tm2source</p>
+                    <p>mapnik won't do simplication for z14 tiles</p>
+                </section>
+                <section>
+                    <p>Initially I tried to use symlinks as a hack to vector-tile-ify this and use the same project.yaml for both the source &amp; style</p>
+                    <p>But source and style need different <code>maxzoom</code>.</p>
+                    <p>Source needs <code>maxzoom: 14</code> to prevent simplification</p>
+                    <p>Style with <code>maxzoom: 14</code> means no z15+ tiles</p>
+                </section>
+                <section>
                         ensure all data present at all layers
-                        disable simplification for z14
                     geometry type on planet_osm_polygon
                 </section>
 
                 <!-- results -->
                 <section>
-                    <p>
-                        Code has been released on GitHub
-                    </p>
+                    <p>Code has been released on GitHub</p>
+                    <p>Will try to keep it updated with upstream style <i>(no guarantees)</i></p>
                     <p>
                         <a href="https://github.com/geofabrik/openstreetmap-carto-vector-tiles">github.com/geofabrik/openstreetmap-carto-vector-tiles</a>
                     </p>
