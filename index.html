@@ -47,29 +47,121 @@
                         <small>Rory McCann <a href="www.technomancy.org">www.technomancy.org</a></small>
                     </p>
                 </section>
+
                 <!-- intro to the OSM carto style -->
-                Main main on openstreetmap.org
-                Style has been grown for years
-                Ported to CartoCSS by Andy Allen in XXXX
+                <section>
+                    <h1>OpenStreetMap Carto style</h1>
+                    <ul>
+                        <li>Main main on openstreetmap.org</li>
+                        <li>Style has been grown for years</li>
+                        <li>Ported to CartoCSS by Andy Allen in 2012</li>
+                        <li>Probably one of the most complicated CartoCSS styles</li>
+                    </ul>
+                </section>
                 <!-- intro to vector tiles -->
                 <!-- Desired outcome -->
                 <section>
-                    <p>Same output (raster images), but served behind with vector tiles</p>
-                    <p>Allow you to change the
+                    <h1>Goal</h1>
+                    <p>Same output (raster images over HTTP), but served behind with vector tiles</p>
+                    <p>Not client side JS / Open GL rendering</p>
+                    <p>To allow one to make minor tweaks to the style without having to host a whole new style</p>
                 </section>
 
-                <!-- Simple way to change it -->
+                <section>
+                    <h1>Let's go!</h1>
+                </section>
+
+                <section>
+                    <h1>How do we render it?</h1>
+                    <p>Kosmtik can render a vector tiles project into images-over-HTTP</p>
+                    <p><code>tilelive</code> - collection of libraries for rendering &amp; serving tiles</p>
+                    <p><code>tessera</code> - command line tilelive-based tool for serving tiles.</p>
+                </section>
+
+                <section>
+                    <h1>Split the project into two</h1>
+                    <p>OSM-carto is just one project with a <code>project.yaml</code></p>
+                    <p>Vector tiles are 2 projects, source and style</p>
+                    <p><code>osm-carto.tm2</code> and <code>osm-carto.tm2source</code></p>
+                </section>
+
+                <section>
+                    <h1>Source project - <code>osm-carto.tm2source</code></h1>
+                    <p>One <code>data.yml</code> (<i>NB: <code>.yml</code> not <code>.y<u>a</u>ml</code></i>)</p>
+                    <p>Remove the top level <code>source</code> and <code>styles</code> keys</p>
+                    <p>Set <code>maxzoom: 14</code></p>
+                </section>
+
+                <section>
+                    <h1>Style project - <code>osm-carto.tm2</code></h1>
+                    <p>One <code>project.yml</code> (<i>NB: <code>.yml</code> not <code>.y<u>a</u>ml</code></i>)</p>
+                    <p>All <code>.mss</code> style files.</p>
+                    <p><code>source</code> is URLish to you tm2source project</p>
+                    <p>All <code>Layer</code>s only have the <code>id</code></p>
+                <aml</code></p>
+                    <p>Vector tiles are 2 projects, source and style</p>
+                    <p><code>osm-carto.tm2</code> and <code>osm-carto.tm2source</code></p>
+                </section>
+
+                <section>
+                    <h1>Source project - <code>osm-carto.tm2source</code></h1>
+                    <p>One <code>data.yml</code> (<i>NB: <code>.yml</code> not <code>.yaml</code></i>)</p>
+                    <p>Remove the top level <code>source</code> and <code>styles</code> keys</p>
+                    <p>Set <code>maxzoom: 14</code></p>
+                </section>
+
+                <section>
+                    <h1>Style project - <code>osm-carto.tm2</code></h1>
+                    <p>One <code>project.yml</code> (<i>NB: <code>.yml</code> not <code>.yaml</code></i>)</p>
+                    <p>All <code>.mss</code> style files.</p>
+                    <p><code>source</code> is URLish to you tm2source project</p>
+                    <p>All <code>Layer</code>s only have the <code>id</code></p>
+                </section>
+
+                <section>
+                    <h1>Done?</h1>
+                    <p>ha!</p>
+                    <p>sadface</p>
+                </section>
+
+
                 <!-- What you need to change in the style -->
-                    No carto classes
-                    Buffer size
-                        example of problem
-                        explaination of why
-                        what you need to change
+                <section>
+                    <h1>No carto classes</h1>
+                    <p>You can't use carto classes - only ids - to filter</p>
+                    <p>Rewrite style to only use <code>#id</code> instead of <code>.class</code> filters</p>
+                    <p>Not so bad for osm-carto</p>
+                    <p>Lots of classes map 1:1 to layer ids anyway</p>
+                </section>
+                <section>
+                    <h1>Buffer</h1>
+                    <p>Common problem in vector tiles</p>
+                    <p>Each vector tile data has a clipped polygon/line for each object</p>
+                    <p>Can only see data inside your tile</p>
+                    <p>Except sometimes you need to see outside your tile</p>
+                    <p>Or you can't render properly</p>
+                </section>
+
+                <!-- image of bad results -->
+                <!-- image explaination -->
+                <!-- image showing problem & solution -->
+
+                <section>
+                    <h1>Solution - <code>buffer-size</code></h1>
+                    <p>Add <code>buffer-size: $PIXELS</code> to each data layer properties</p>
+                    <p>Value can be small (~4) for polygon boundaries</p>
+                    <p>Large (~128) for label placement
+                </section>
+
+                <section>
                     Point on Surface/ centroid
+                </section>
+                <section>
                     Zoom level
                         ensure all data present at all layers
                         disable simplification for z14
                     geometry type on planet_osm_polygon
+                </section>
 
                 <!-- results -->
                 <section>
