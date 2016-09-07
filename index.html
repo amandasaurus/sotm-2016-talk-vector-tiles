@@ -133,6 +133,7 @@
                     <p>Not so bad for osm-carto</p>
                     <p>Lots of classes map 1:1 to layer ids anyway</p>
                 </section>
+
                 <section>
                     <h1>Buffer</h1>
                     <p>Common problem in vector tiles</p>
@@ -154,8 +155,36 @@
                 </section>
 
                 <section>
-                    Point on Surface/ centroid
+                    <h1>Problem: Centroid of a polygon</h1>
+                    <p>e.g. Labels for names, addresses, icons.</p>
+                    <p>In raster tiles, using meta tiles, mapnik has the polygon, and can place the centroid once</p>
+                    <p>Vector tiles: Each tile is separate render, each tile has its own polygon</p>
+                    <p>Problem: Each tile will have a label in the middle</p>
+                    <!-- image -->
                 </section>
+                <section>
+                    Solution: Change SQL to return a point, not a polygon
+                    i.e. Have PostgreSQL, not Mapnik, convert the polygon to a point
+                    You now have a point layer, and mapnik puts the label there
+                    Only one point per polygon, regardless of how many v. tiles the polygon is on
+                </section>
+                <section>
+                    <h1>SQL</h1>
+                    <code>ST_Centroid(way) AS way</code>: Geometic centroid
+                    <code>ST_PointOnSurface(way) AS way</code>: Point will be inside polygon 
+                    Centroid is about 4 times faster, but PointOnSurface is more "correct"
+                </section>
+                <section>
+                    Problem: Indexes
+                    "Give me buildings in this bbox" → PostgreSQL can use geom index
+                    "Give me ST_Centroid(way) in this bbox" → PostgreSQL cannot use index
+                </section>
+                <section>
+                    Solution: Use an Index
+                    Add <code>AND way &amp;&amp; !bbox!</code> to <code>WHERE</code> clauses
+                    Makes PostgreSQL filter based on the way column, and use the geom index
+                </section>
+
                 <section>
                     <h1>Zoom level</h1>
                     <!-- image of simplification problem -->
@@ -186,7 +215,18 @@
                     <!-- Maybe this is slowing things down -->
                 </section>
                 <section>
-                    geometry type on planet_osm_polygon
+                    <h1>Minor: way polygon type on planet_osm_polygon</h1>
+                    <p>With default osm2pgsql database, node-mapnik will do something strange and silly</p>
+                    <p>Tries to autodetect geometry type by running the query and looking at first few rows</p>
+                    <p>No bbox filtering, runs query globally</p>
+                    <p><code>SELECT all buildings ORDER BY way_area DESC LIMIT 5</code></p>
+                    <p>This is slow</p>
+                    <p><a href="https://github.com/openstreetmap/osm2pgsql/issues/573">osm2pgsql issue #573</a></p>
+                </section>
+                <section>
+                    <h1>Solution - Change geometry type</h1>
+                    <p><code>ALTER TABLE planet_osm_polygon ALTER COLUMN way TYPE geometry(MultiPolygon, 900913) USING ST_Multi(way);</code></p>
+                    <p>Have a <a href="https://github.com/rory/osm2pgsql/tree/polygon-table-has-polygon-col-type">osm2pgsql fork</a> which imports as <code>MULITPOLYGON</code></p>
                 </section>
 
                 <!-- results -->
