@@ -144,6 +144,8 @@
                 </section>
 
                 <!-- image of bad results -->
+                <!-- image polygon with border -->
+                <!-- image of line with clipped cap -->
                 <!-- image explaination -->
                 <!-- image showing problem & solution -->
 
@@ -183,6 +185,15 @@
                     <h1>Solution: Use an Index</h1>
                     <p>Add <code>AND way &amp;&amp; !bbox!</code> to <code>WHERE</code> clauses</p>
                     <p>Makes PostgreSQL filter based on the way column, and use the geom index</p>
+                </section>
+                <section>
+                    Buffer size comes into play here
+                    Needed to include the centroid from another tile for label placement
+                    <!-- image showing problem with label placement -->
+                    <!-- image of data in label placement and why the problem occurs -->
+                    <!-- image of buffer sized label placement showing how it includes data from other tile -->
+                    <!-- image of it using that to draw clipped text -->
+                    <!-- For icons, you only need small buffer. For text, a large buffer is needed. -->
                 </section>
 
                 <section>
