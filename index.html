@@ -163,10 +163,10 @@
                     <!-- image -->
                 </section>
                 <section>
-                    Solution: Change SQL to return a point, not a polygon
-                    i.e. Have PostgreSQL, not Mapnik, convert the polygon to a point
-                    You now have a point layer, and mapnik puts the label there
-                    Only one point per polygon, regardless of how many v. tiles the polygon is on
+                    <h1>Solution: Change SQL to return a point, not a polygon</h1>
+                    <p>i.e. Have PostgreSQL, not Mapnik, convert the polygon to a point</p>
+                    <p>You now have a point layer, and mapnik puts the label there</p>
+                    <p>Only one point per polygon, regardless of how many v. tiles the polygon is on</p>
                 </section>
                 <section>
                     <h1>SQL</h1>
@@ -175,14 +175,14 @@
                     Centroid is about 4 times faster, but PointOnSurface is more "correct"
                 </section>
                 <section>
-                    Problem: Indexes
-                    "Give me buildings in this bbox" → PostgreSQL can use geom index
-                    "Give me ST_Centroid(way) in this bbox" → PostgreSQL cannot use index
+                    <h1>Problem: Indexes</h1>
+                    <p>"Give me buildings in this bbox" → PostgreSQL can use geom index</p>
+                    <p>"Give me ST_Centroid(way) in this bbox" → PostgreSQL cannot use index</p>
                 </section>
                 <section>
-                    Solution: Use an Index
-                    Add <code>AND way &amp;&amp; !bbox!</code> to <code>WHERE</code> clauses
-                    Makes PostgreSQL filter based on the way column, and use the geom index
+                    <h1>Solution: Use an Index</h1>
+                    <p>Add <code>AND way &amp;&amp; !bbox!</code> to <code>WHERE</code> clauses</p>
+                    <p>Makes PostgreSQL filter based on the way column, and use the geom index</p>
                 </section>
 
                 <section>
@@ -190,9 +190,9 @@
                     <!-- image of simplification problem -->
                 </section>
                 <section>
-                    Data is being simplified
-                    Fine for normal zoom level, but z15+ uses z14 data
-                    Simplification is too much
+                    <h1>Data is being simplified</h1>
+                    <p>Fine for normal zoom level, but z15+ uses z14 data</p>
+                    <p>Simplification is too much</p>
                 </section>
                 <section>
                     <h1>Solution - <code>maxzoom</code></h1>
