@@ -200,6 +200,7 @@
                     <h1>Solution: Use an Index</h1>
                     <p>Add <code>AND way &amp;&amp; !bbox!</code> to <code>WHERE</code> clauses</p>
                     <p>Makes PostgreSQL filter based on the way column, and use the geom index</p>
+                    <p>Or you can <code>CREATE INDEX</code> on <code>ST_Centroid(way)</code></p>
                 </section>
                 <section>
                     Buffer size comes into play here
