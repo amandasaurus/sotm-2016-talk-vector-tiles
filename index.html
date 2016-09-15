@@ -147,6 +147,7 @@
                     <p>Rewrite style to only use <code>#id</code> instead of <code>.class</code> filters</p>
                     <p>Not so bad for osm-carto</p>
                     <p>Lots of classes map 1:1 to layer ids anyway</p>
+                    <p>Solved!</p>
                 </section>
 
                 <section>
@@ -158,8 +159,24 @@
                     <p>Or you can't render properly</p>
                 </section>
 
-                <!-- image of bad results -->
-                <!-- image polygon with border -->
+                <section>
+                    <h1>Buffer</h1>
+                    <img src="images/buffer-1.png">
+                    <p>It's a polygon (green). We want to draw a border.</p>
+                    <p>It is spread across many vtiles (black)</p>
+                </section>
+                <section>
+                    <h1>Buffer</h1>
+                    <img src="images/buffer-2.png">
+                    <p>Polygon is cut. 4 new polygons</p>
+                </section>
+                <section>
+                    <h1>Buffer</h1>
+                    <img src="images/buffer-3.png">
+                    <p>Border of the polygon is rendered at tile borders</p>
+                </section>
+
+
                 <!-- image of line with clipped cap -->
                 <!-- image explaination -->
                 <!-- image showing problem & solution -->
@@ -169,6 +186,12 @@
                     <p>Add <code>buffer-size: $PIXELS</code> to each data layer properties</p>
                     <p>Value can be small (~4) for polygon boundaries</p>
                     <p>Large (~128) for label placement
+                </section>
+                <section>
+                    <h1>Solution - <code>buffer-size</code></h1>
+                    <img src="images/buffer-4.png">
+                    <p>Polygon now goes outside the image, border still draw.</p>
+                    <p>But results are clipped out of final image</p>
                 </section>
 
                 <section>
