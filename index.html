@@ -46,6 +46,9 @@
 					<p>
                         <small>Rory McCann <a href="www.technomancy.org">www.technomancy.org</a></small>
                     </p>
+					<p>
+                        <small>Geofabrik <a href="geofabrik.de">geofabrik.de</a></small>
+                    </p>
                 </section>
 
                 <!-- intro to the OSM carto style -->
@@ -157,6 +160,12 @@
                     <p>Can only see data inside your tile</p>
                     <p>Except sometimes you need to see outside your tile</p>
                     <p>Or you can't render properly</p>
+                </section>
+
+                <section>
+                    <h1>Buffer</h1>
+                    <img src="images/points-and-borders-bad.png">
+                    <img src="images/points-and-borders-good.png">
                 </section>
 
                 <section>
@@ -305,7 +314,7 @@
 				history: true,
 				center: true,
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+				transition: 'none', // none/fade/slide/convex/concave/zoom
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
