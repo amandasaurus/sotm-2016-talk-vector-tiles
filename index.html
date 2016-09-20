@@ -73,10 +73,6 @@
                 </section>
 
                 <section>
-                    <h1>Let's go!</h1>
-                </section>
-
-                <section>
                     <h1>How do we render it?</h1>
                     <p>Kosmtik can render a vector tiles project into images-over-HTTP</p>
                     <p><code>tilelive</code> - collection of libraries for rendering &amp; serving tiles</p>
@@ -87,32 +83,24 @@
                     <h1>Step #1 - Split the project into two</h1>
                     <p>OSM-carto is just one project with a <code>project.yaml</code></p>
                     <p>Vector tiles are 2 projects, source and style</p>
-                    <p><code>osm-carto.tm2</code> and <code>osm-carto.tm2source</code></p>
+                    <p><code>osm-carto.tm2source</code> and <code>osm-carto.tm2</code></p>
                 </section>
 
                 <section>
                     <h1>Source project - <code>osm-carto.tm2source</code></h1>
-                    <p>One <code>data.yml</code> (<i>NB: <code>.yml</code> not <code>.y<u>a</u>ml</code></i>)</p>
+                    <p>Directory with one file: <code>data.yml</code> (<i>NB: <code>.yml</code> not <code>.y<u>a</u>ml</code></i>)</p>
+                    <p>Copy the <code>project.yaml</code></p>
                     <p>Remove the top level <code>source</code> and <code>styles</code> keys</p>
                     <p>Set <code>maxzoom: 14</code></p>
                 </section>
 
                 <section>
                     <h1>Style project - <code>osm-carto.tm2</code></h1>
-                    <p>One <code>project.yml</code> (<i>NB: <code>.yml</code> not <code>.y<u>a</u>ml</code></i>)</p>
-                    <p>All <code>.mss</code> style files.</p>
+                    <p>Directory with: <code>project.yml</code> (<i>NB: <code>.yml</code> not <code>.y<u>a</u>ml</code></i>)</p>
+                    <p>Copy the <code>project.yaml</code></p>
                     <p><code>source</code> is URLish to you tm2source project</p>
                     <p>All <code>Layer</code>s only have the <code>id</code></p>
-                <aml</code></p>
-                    <p>Vector tiles are 2 projects, source and style</p>
-                    <p><code>osm-carto.tm2</code> and <code>osm-carto.tm2source</code></p>
-                </section>
-
-                <section>
-                    <h1>Source project - <code>osm-carto.tm2source</code></h1>
-                    <p>One <code>data.yml</code> (<i>NB: <code>.yml</code> not <code>.yaml</code></i>)</p>
-                    <p>Remove the top level <code>source</code> and <code>styles</code> keys</p>
-                    <p>Set <code>maxzoom: 14</code></p>
+                    <p>All <code>.mss</code> style files.</p>
                 </section>
 
                 <section>
@@ -197,6 +185,13 @@
                     <h1>Solution - <code>buffer-size</code></h1>
                     <p>Value can be small (~4) for polygon boundaries</p>
                     <p>Large (~128) for label placement
+                </section>
+                <section>
+                    <h1>Anothe Solution - <code>ST_Boundary</code></h1>
+                    <p>Or change SQL to return the boundary as a line, rather than drawing a polygon</p>
+                    <p><code>ST_Boundary(way) as way</code></p>
+                    <p>I do this for the text around admin borders, to reduce data in vector tile</p>
+                    <p>Be careful of indexes (see later)</p>
                 </section>
 
                 <section>
@@ -290,14 +285,13 @@
 
                 <section>
                     <h1>Buffer for lines too</h1>
-                    <p>Buffer for lines</p>
-                    <p>Buffer for line labels (e.g. road/ref labels)</p>
+                    <p>Buffer for lines for end cap</p>
+                    <p>Buffer for line labels (e.g. road/ref labels) (but don't need to convert lines to points in SQL)</p>
                 </section>
 
 
                 <section>
                     <h1>Zoom level</h1>
-                    <!-- image of simplification problem -->
                 </section>
                 <section>
                     <h1>Data is being simplified</h1>
@@ -307,20 +301,23 @@
                 <section>
                     <h1>Solution - <code>maxzoom</code></h1>
                     <p><code>maxzoom: 14</code> in tm2source</p>
-                    <p>mapnik won't do simplication for z14 tiles</p>
+                    <p>When a z14 vector tile is generated, no data simplification will happen</p>
+                    <p>z14 tile is more detailed than it needs to be for z14</p>
+                    <p>But detailed enough for a z18 tile</p>
                 </section>
                 <section>
                     <p>Initially I tried to use symlinks as a hack to vector-tile-ify this and use the same project.yaml for both the source &amp; style</p>
                     <p>But source and style need different <code>maxzoom</code>.</p>
                     <p>Source needs <code>maxzoom: 14</code> to prevent simplification</p>
-                    <p>Style with <code>maxzoom: 14</code> means no z15+ tiles</p>
+                    <p>Style with <code>maxzoom: 22</code> to generate tiles in z15-22</p>
                 </section>
                 <section>
                     <h1>All data needs to be at z14</h1>
                     <p>Each layer in the source has a <code>minzoom</code></p>
                     <p>Needs to be minimum of 14</p>
-                    <p>In OSM-carto some is <code>minzoom: 16</code></p>
+                    <p>In OSM-carto some is <code>minzoom: 17</code></p>
                     <p>Otherwise data won't be included in z14 tile, which is uses to render z15+ tiles</p>
+                    <p>Change all <code>minzoom</code> in your source to be <code>minzoom: 14</code> at minimum</p>
                     <p>Style can still filter on zoom for display purposes (<code>[zoom&gt;16]</code>)</p>
                 </section>
 
@@ -328,9 +325,9 @@
                 <section>
                     <h1>Problem: <code>way_pixels</code></h1>
                     <p>osm-carto uses <code>way_area/NULLIF(!pixel_width!::real*!pixel_height!::real,0)</code> to get "display size" of polygons.</p>
-                    <p>Goal: Only draw things over a certain display size</p>
-                    <p>But way_area different on each zoom level</p>
-                    <p>z15+ tiles are based on z14 tiles. So way_area is wrong</p>
+                    <p>Only draw things over a certain display size. Style can be zoom level independent</p>
+                    <p>way_pixels different on each zoom level.</p>
+                    <p>z15+ tiles are based on z14 tiles, and z14 way_pixels are no good for z15+ style</p>
                 </section>
                 <section>
                     <h1>Solution: New per zoom way_pixels</h1>
@@ -340,12 +337,14 @@
 
                 <section>
                     <h1>Minor: way polygon type on planet_osm_polygon</h1>
+                    <div class=fragment>
                     <p>With default osm2pgsql database, node-mapnik will do something strange and silly</p>
-                    <p>Tries to autodetect geometry type by running the query and looking at first few rows</p>
+                    <p>Tries to autodetect geometry type by running the query and looking at first 5 rows</p>
                     <p>No bbox filtering, runs query globally</p>
                     <p><code>SELECT all buildings ORDER BY way_area DESC LIMIT 5</code></p>
                     <p>This is slow</p>
                     <p><a href="https://github.com/openstreetmap/osm2pgsql/issues/573">osm2pgsql issue #573</a></p>
+                    </div>
                 </section>
                 <section>
                     <h1>Solution - Change geometry type</h1>
@@ -355,11 +354,15 @@
 
                 <!-- results -->
                 <section>
+                    <h1><code>openstreetmap-carto-vector-tiles</code></h1>
+                    <div class=fragment>
+                        <p>Thanks for listening</p>
                     <p>Code has been released on GitHub</p>
                     <p>Will try to keep it updated with upstream style <i>(no guarantees)</i></p>
                     <p>
                         <a href="https://github.com/geofabrik/openstreetmap-carto-vector-tiles">github.com/geofabrik/openstreetmap-carto-vector-tiles</a>
                     </p>
+                    </div>
                 </section>
 
 			</div>
