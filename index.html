@@ -116,14 +116,6 @@
                 </section>
 
                 <section>
-                    <h1>Style project - <code>osm-carto.tm2</code></h1>
-                    <p>One <code>project.yml</code> (<i>NB: <code>.yml</code> not <code>.yaml</code></i>)</p>
-                    <p>All <code>.mss</code> style files.</p>
-                    <p><code>source</code> is URLish to you tm2source project</p>
-                    <p>All <code>Layer</code>s only have the <code>id</code></p>
-                </section>
-
-                <section>
                     <h1>Done?</h1>
                     <p>ha!</p>
                     <p>😟 </p>
@@ -157,15 +149,14 @@
 
                 <section>
                     <h1>Borders and polygon labels</h1>
-                    <img src="images/points-and-borders-bad.png">
-                    <img src="images/points-and-borders-good.png">
-                    <p>Label in polygon repeated</p>
+                    <img src="images/bad-border-buffer.png">
+                    <p>Polygon border is drawn inside the polygon</p>
                 </section>
 
                 <section>
                     <h1>Buffer</h1>
                     <p>Common problem in vector tiles</p>
-                    <p>Each vector tile data has a clipped polygon/line for each object</p>
+                    <p>Each line/polygon has been clipped to the vector tile</p>
                     <p>Can only see data inside your tile</p>
                     <p>Except sometimes you need to see outside your tile</p>
                     <p>Or you can't render properly</p>
@@ -180,31 +171,32 @@
                 </section>
                 <section>
                     <h1>Polygon border</h1>
-                    <img src="images/buffer-2.png">
-                    <p>Polygon is cut. 4 new polygons</p>
+                    <img src="images/buffer-3.png">
+                    <p>Each tile rendered separately</p>
+                    <p>Border of the polygon is rendered at polygon borders</p>
                 </section>
                 <section>
                     <h1>Polygon border</h1>
-                    <img src="images/buffer-3.png">
-                    <p>Border of the polygon is rendered at tile borders</p>
+                    <img src="images/buffer-2.png">
+                    <p>Result, border inside the polygon</p>
                 </section>
 
-
-                <!-- image of line with clipped cap -->
-                <!-- image explaination -->
-                <!-- image showing problem & solution -->
 
                 <section>
                     <h1>Solution - <code>buffer-size</code></h1>
                     <p>Add <code>buffer-size: $PIXELS</code> to each data layer properties</p>
-                    <p>Value can be small (~4) for polygon boundaries</p>
-                    <p>Large (~128) for label placement
+                    <p>Increases amount of data in layer to go outside vector tile border</p>
                 </section>
                 <section>
                     <h1>Solution - <code>buffer-size</code></h1>
                     <img src="images/buffer-4.png">
                     <p>Polygon now goes outside the image, border still draw.</p>
                     <p>But results are clipped out of final image</p>
+                </section>
+                <section>
+                    <h1>Solution - <code>buffer-size</code></h1>
+                    <p>Value can be small (~4) for polygon boundaries</p>
+                    <p>Large (~128) for label placement
                 </section>
 
                 <section>
@@ -215,8 +207,7 @@
                 <section>
                     <h1>Polygon label</h1>
                     <img src="images/buffer-label-1.png">
-                    <p>Want to place a label for (green) polygon which is split by (black) tiles</p>
-                    <p>non-vector tiles, mapnik picks a point (blue) and puts label there</p>
+                    <p>Want to place a label for (green) polygon which is split by (black) tiles. non-vector tiles, mapnik picks a point (blue) and puts label there</p>
                 </section>
 
                 <section>
@@ -286,6 +277,23 @@
                     <img src="images/label-buffer-5.png">
                     <p>Larger buffer (128?) for the labels so other tiles get the label text</p>
                 </section>
+
+                <section>
+                    <h1>Fixes</h1>
+                    <ul>
+                        <li>Buffer for polygon borders</li>
+                        <li>Change SQL to convert polygon to point in PostgreSQL</li>
+                        <li>Change SQL to include <code>!bbox!</code> for index usage</li>
+                        <li>Large buffer for label point layer</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h1>Buffer for lines too</h1>
+                    <p>Buffer for lines</p>
+                    <p>Buffer for line labels (e.g. road/ref labels)</p>
+                </section>
+
 
                 <section>
                     <h1>Zoom level</h1>
