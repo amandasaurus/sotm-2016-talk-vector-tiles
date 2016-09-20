@@ -68,6 +68,8 @@
                     <p>Same output (raster images over HTTP), but served behind with vector tiles</p>
                     <p>Not client side JS / Open GL rendering</p>
                     <p>To allow one to make minor tweaks to the style without having to host a whole new style</p>
+                    <p>E.g. Change language names to always show English names</p>
+                    <p>Turn off all POIs</p>
                 </section>
 
                 <section>
@@ -82,7 +84,7 @@
                 </section>
 
                 <section>
-                    <h1>Split the project into two</h1>
+                    <h1>Step #1 - Split the project into two</h1>
                     <p>OSM-carto is just one project with a <code>project.yaml</code></p>
                     <p>Vector tiles are 2 projects, source and style</p>
                     <p><code>osm-carto.tm2</code> and <code>osm-carto.tm2source</code></p>
@@ -124,7 +126,7 @@
                 <section>
                     <h1>Done?</h1>
                     <p>ha!</p>
-                    <p>sadface</p>
+                    <p>😟 </p>
                 </section>
 
                 <section>
@@ -154,6 +156,13 @@
                 </section>
 
                 <section>
+                    <h1>Borders and polygon labels</h1>
+                    <img src="images/points-and-borders-bad.png">
+                    <img src="images/points-and-borders-good.png">
+                    <p>Label in polygon repeated</p>
+                </section>
+
+                <section>
                     <h1>Buffer</h1>
                     <p>Common problem in vector tiles</p>
                     <p>Each vector tile data has a clipped polygon/line for each object</p>
@@ -162,25 +171,20 @@
                     <p>Or you can't render properly</p>
                 </section>
 
-                <section>
-                    <h1>Buffer</h1>
-                    <img src="images/points-and-borders-bad.png">
-                    <img src="images/points-and-borders-good.png">
-                </section>
 
                 <section>
-                    <h1>Buffer</h1>
+                    <h1>Polygon border</h1>
                     <img src="images/buffer-1.png">
                     <p>It's a polygon (green). We want to draw a border.</p>
                     <p>It is spread across many vtiles (black)</p>
                 </section>
                 <section>
-                    <h1>Buffer</h1>
+                    <h1>Polygon border</h1>
                     <img src="images/buffer-2.png">
                     <p>Polygon is cut. 4 new polygons</p>
                 </section>
                 <section>
-                    <h1>Buffer</h1>
+                    <h1>Polygon border</h1>
                     <img src="images/buffer-3.png">
                     <p>Border of the polygon is rendered at tile borders</p>
                 </section>
@@ -204,6 +208,24 @@
                 </section>
 
                 <section>
+                    <h1>Polygon label</h1>
+                    <img src="images/points-and-borders-bad.png">
+                    <img src="images/points-and-borders-good.png">
+                </section>
+                <section>
+                    <h1>Polygon label</h1>
+                    <img src="images/buffer-label-1.png">
+                    <p>Want to place a label for (green) polygon which is split by (black) tiles</p>
+                    <p>non-vector tiles, mapnik picks a point (blue) and puts label there</p>
+                </section>
+
+                <section>
+                    <h1>Polygon label</h1>
+                    <img src="images/buffer-label-2.png">
+                    <p>Polygon split at vtile borders</p>
+                    <p>mapnik picks a point (blue) and puts label there</p>
+                </section>
+                <section>
                     <h1>Problem: Centroid of a polygon</h1>
                     <p>e.g. Labels for names, addresses, icons.</p>
                     <p>In raster tiles, using meta tiles, mapnik has the polygon, and can place the centroid once</p>
@@ -221,7 +243,7 @@
                     <h1>SQL</h1>
                     <code>ST_Centroid(way) AS way</code>: Geometic centroid
                     <code>ST_PointOnSurface(way) AS way</code>: Point will be inside polygon 
-                    Centroid is about 4 times faster, but PointOnSurface is more "correct"
+                    <p>Centroid is about 4 times faster, but PointOnSurface is more "correct"</p>
                 </section>
                 <section>
                     <h1>Problem: Indexes</h1>
@@ -234,14 +256,35 @@
                     <p>Makes PostgreSQL filter based on the way column, and use the geom index</p>
                     <p>Or you can <code>CREATE INDEX</code> on <code>ST_Centroid(way)</code></p>
                 </section>
+
                 <section>
-                    Buffer size comes into play here
-                    Needed to include the centroid from another tile for label placement
-                    <!-- image showing problem with label placement -->
-                    <!-- image of data in label placement and why the problem occurs -->
-                    <!-- image of buffer sized label placement showing how it includes data from other tile -->
-                    <!-- image of it using that to draw clipped text -->
-                    <!-- For icons, you only need small buffer. For text, a large buffer is needed. -->
+                    <h1>Problem - Clipped labels</h1>
+                    <img src="images/bad-label-placement.png">
+                </section>
+                <section>
+                    <h1>Problem - Clipped labels</h1>
+                    <img src="images/label-buffer-1.png">
+                    <p>We have label (blue) in just one tile</p>
+                </section>
+                <section>
+                    <h1>Problem - Clipped labels</h1>
+                    <img src="images/label-buffer-2.png">
+                    <p>Where the name should be drawn</p>
+                </section>
+                <section>
+                    <h1>Problem - Clipped labels</h1>
+                    <img src="images/label-buffer-3.png">
+                    <p>Split across tiles. Only drawn in one tile</p>
+                </section>
+                <section>
+                    <h1>Problem - Clipped labels</h1>
+                    <img src="images/label-buffer-4.png">
+                    <p>Result - clipped label</p>
+                </section>
+                <section>
+                    <h1>Solution - Large buffer for label points</h1>
+                    <img src="images/label-buffer-5.png">
+                    <p>Larger buffer (128?) for the labels so other tiles get the label text</p>
                 </section>
 
                 <section>
@@ -268,11 +311,25 @@
                     <h1>All data needs to be at z14</h1>
                     <p>Each layer in the source has a <code>minzoom</code></p>
                     <p>Needs to be minimum of 14</p>
+                    <p>In OSM-carto some is <code>minzoom: 16</code></p>
                     <p>Otherwise data won't be included in z14 tile, which is uses to render z15+ tiles</p>
                     <p>Style can still filter on zoom for display purposes (<code>[zoom&gt;16]</code>)</p>
-                    <!-- Example of bad layer with z17 layer -->
-                    <!-- Maybe this is slowing things down -->
                 </section>
+
+
+                <section>
+                    <h1>Problem: <code>way_pixels</code></h1>
+                    <p>osm-carto uses <code>way_area/NULLIF(!pixel_width!::real*!pixel_height!::real,0)</code> to get "display size" of polygons.</p>
+                    <p>Goal: Only draw things over a certain display size</p>
+                    <p>But way_area different on each zoom level</p>
+                    <p>z15+ tiles are based on z14 tiles. So way_area is wrong</p>
+                </section>
+                <section>
+                    <h1>Solution: New per zoom way_pixels</h1>
+                    <p>Manually change style: <code>[zoom &gt;= 10][way_pixels &gt; 3000], [zoom &gt;= 17] {</code></p>
+                    <p>New <code>[zoom &gt;= 10][way_pixels &gt; 3000], [zoom=14][way_pixels &gt; 3000], [zoom=15][way_pixels &gt; 750], [zoom=16][way_pixels &gt; 187], [zoom &gt;= 17] {</code>
+                </section>
+
                 <section>
                     <h1>Minor: way polygon type on planet_osm_polygon</h1>
                     <p>With default osm2pgsql database, node-mapnik will do something strange and silly</p>
@@ -296,7 +353,6 @@
                         <a href="https://github.com/geofabrik/openstreetmap-carto-vector-tiles">github.com/geofabrik/openstreetmap-carto-vector-tiles</a>
                     </p>
                 </section>
-                <!-- Problems-->
 
 			</div>
 
